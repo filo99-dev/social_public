@@ -3,6 +3,7 @@ package org.elis.social.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.elis.social.dto.request.post.InsertPostDTO;
 import org.elis.social.dto.request.post.UpdatePostDTO;
+import org.elis.social.dto.response.PagedEntity;
 import org.elis.social.dto.response.post.ResponsePostDTO;
 import org.elis.social.errorhandling.exceptions.NotFoundException;
 import org.elis.social.errorhandling.exceptions.OwnershipException;
@@ -11,11 +12,12 @@ import org.elis.social.model.Hashtag;
 import org.elis.social.model.Post;
 import org.elis.social.model.Ruolo;
 import org.elis.social.model.Utente;
-import org.elis.social.repository.jpa.CommentRepositoryJpa;
-import org.elis.social.repository.jpa.HashtagRepositoryJpa;
-import org.elis.social.repository.jpa.PostRepositoryJpa;
-import org.elis.social.repository.jpa.UtenteRepositoryJpa;
+import org.elis.social.repository.jpa.*;
 import org.elis.social.service.definition.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,6 +30,18 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
     private final UtenteRepositoryJpa utenteRepositoryJpa;
     private final HashtagRepositoryJpa hashtagRepositoryJpa;
+
+    @Override
+    public PagedEntity<ResponsePostDTO> findByPage(Integer pageNumber) {
+        Page<Post> pagePost = postRepositoryJpa.findAll(PageRequest.of(pageNumber,10, Sort.by("creationDateTime").descending()));
+        PagedEntity<ResponsePostDTO> entity = new PagedEntity<>();
+        entity.setItems(pagePost.getContent().stream()
+                .map(postMapper::toResponsePostDTO).toList());
+        entity.setTotalPages(pagePost.getTotalPages());
+        entity.setCurrentPageNumber(pageNumber);
+        return entity;
+    }
+
     @Override
     public ResponsePostDTO insert(InsertPostDTO dto, Utente utente) {
         Post newPost = new Post();

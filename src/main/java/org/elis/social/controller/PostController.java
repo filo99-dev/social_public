@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.elis.social.dto.request.post.InsertPostDTO;
 import org.elis.social.dto.request.post.UpdatePostDTO;
+import org.elis.social.dto.response.PagedEntity;
 import org.elis.social.dto.response.post.ResponsePostDTO;
 import org.elis.social.model.Utente;
 import org.elis.social.service.definition.PostService;
@@ -21,6 +22,10 @@ public class PostController {
 
 
 
+    @GetMapping("/all/post/paged/{pageNumber}")
+    public ResponseEntity<PagedEntity<ResponsePostDTO>> postsByPage(@PathVariable Integer pageNumber) {
+        return ResponseEntity.ok(postService.findByPage(pageNumber));
+    }
     //Prende tutti i post in base all'id passato tramite path
     @GetMapping("/all/post/user/{id}")
     public ResponseEntity<List<ResponsePostDTO>> findAllByUserId(@PathVariable Long id){

@@ -23,6 +23,11 @@ public class UtenteController {
     private final UtenteService utenteService;
     private final JwtUtilities jwtUtilities;
 
+    @GetMapping("/all/username/check/{username}")
+    public ResponseEntity<Void> checkUsername(@PathVariable String username) {
+        utenteService.checkUsernameAvailability(username);
+        return ResponseEntity.ok().build();
+    }
     @GetMapping("/all/likes/post/{id}")
     public ResponseEntity<List<ResponseUserDTO>> findAllLikesByPostId(@PathVariable Long id)
     {

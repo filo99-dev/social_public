@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UtenteService {
+    void checkUsernameAvailability(String username);
     List<ResponseUserDTO> findAllFollowersByUserId(Long id);
     ResponseUserDTO findById(Long id);
     List<ResponseUserDTO> findAllUserLikesByPostId(Long id);

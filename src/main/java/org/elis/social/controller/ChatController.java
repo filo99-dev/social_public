@@ -8,7 +8,6 @@ import org.elis.social.model.Utente;
 import org.elis.social.service.definition.ChatService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

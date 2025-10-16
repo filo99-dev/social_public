@@ -28,4 +28,6 @@ public interface UtenteRepositoryJpa extends JpaRepository<Utente,Long> {
     @Query("select u from Utente u left join u.followers where u.id=:id")
     Optional<Utente> findUserWithFollowersById(Long id);
 
+    Boolean existsByUsername(String username);
+
 }

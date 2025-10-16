@@ -27,6 +27,13 @@ public class UtenteServiceImpl implements UtenteService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    public void checkUsernameAvailability(String username) {
+        if(utenteRepositoryJpa.existsByUsername(username)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username già utilizzato");
+        }
+    }
+
+    @Override
     public List<ResponseUserDTO> findAllFollowersByUserId(Long id) {
 
         return utenteRepositoryJpa.findUserWithFollowersById(id)

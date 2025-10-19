@@ -6,6 +6,7 @@ import org.elis.social.dto.error.ErrorResponseDTO;
 import org.elis.social.dto.error.ValidationErrorDTO;
 import org.elis.social.errorhandling.exceptions.NotFoundException;
 import org.elis.social.errorhandling.exceptions.OwnershipException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.security.SignatureException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -68,23 +70,17 @@ public class MyErrorHandlers {
         dto.setPath(request.getDescription(false));
         return ResponseEntity.status(status).body(dto);
     }
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<ErrorResponseDTO> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException exception, WebRequest request) throws Throwable {
+    @ExceptionHandler({ DataIntegrityViolationException.class})
+    public ResponseEntity<ErrorResponseDTO> handleSQLIntegrityConstraintViolationException(DataIntegrityViolationException exception, WebRequest request) throws Throwable {
         var dto = new ErrorResponseDTO();
         var status = HttpStatus.BAD_REQUEST;
-        if(exception.getErrorCode()==1451)
-        {
-            dto.setMessage("errore foreign key");
-        }
-        else{
-            dto.setMessage("chiave duplicata");
-        }
+        dto.setMessage("operazione non supportata");
         dto.setPath(request.getDescription(false));
         dto.setStatus(status.name());
         return ResponseEntity.badRequest().body(dto);
     }
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO>  notFoundException(NotFoundException e, WebRequest request) throws Throwable {
+    @ExceptionHandler({NotFoundException.class, NoResourceFoundException.class})
+    public ResponseEntity<ErrorResponseDTO>  notFoundException(Exception e, WebRequest request) throws Throwable {
         HttpStatus status = HttpStatus.NOT_FOUND;
         var dto = new ErrorResponseDTO();
         dto.setMessage(e.getMessage());
@@ -133,7 +129,7 @@ public class MyErrorHandlers {
     {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         var dto = new ErrorResponseDTO();
-        dto.setMessage(ex.getMessage());
+        dto.setMessage(ex.toString());
         dto.setStatus(status.name());
         dto.setPath(wr.getDescription(false));
         return ResponseEntity.status(status).body(dto);

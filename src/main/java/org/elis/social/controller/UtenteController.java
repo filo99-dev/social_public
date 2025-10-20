@@ -47,10 +47,10 @@ public class UtenteController {
     }
 
     @PostMapping("/all/login")
-    public ResponseEntity<ResponseUserDTO> login(@Valid @RequestBody LoginDTO dto)
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginDTO dto)
     {
         ResponseUserDTO response = utenteService.login(dto);
-        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION,jwtUtilities.generaToken(response)).body(response);
+        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION,jwtUtilities.generaToken(response)).build();
     }
     @PostMapping("/all/register")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterUserDTO dto)

@@ -26,6 +26,9 @@ public class JwtUtilities {
                 .expiration(new Date(dataScadenza))
                 .claims()
                 .add("ruolo",utente.getRole().toString())
+                .add("email",utente.getEmail())
+                .add("phoneNumber",utente.getPhoneNumber())
+                .add("id", utente.getId())
                 .and()
                 .signWith(secretKey())
                 .compact();

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.elis.social.dto.request.post.InsertPostDTO;
 import org.elis.social.dto.request.post.UpdatePostDTO;
 import org.elis.social.dto.response.PagedEntity;
+import org.elis.social.dto.response.hashtag.ResponseHashtagDTO;
 import org.elis.social.dto.response.post.ResponsePostDTO;
 import org.elis.social.errorhandling.exceptions.NotFoundException;
 import org.elis.social.errorhandling.exceptions.OwnershipException;
@@ -16,7 +17,6 @@ import org.elis.social.repository.jpa.*;
 import org.elis.social.service.definition.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -36,12 +36,7 @@ public class PostServiceImpl implements PostService {
         Page<Post> pagePost = postRepositoryJpa.findAll(PageRequest.of(pageNumber,10, Sort.by("creationDateTime").descending()));
         PagedEntity<ResponsePostDTO> entity = new PagedEntity<>();
         entity.setItems(pagePost.getContent().stream()
-                .map(t->{
-                    boolean isLiked = checkLike(t,utente);
-                    ResponsePostDTO dto = postMapper.toResponsePostDTO(t);
-                    dto.setIsLiked(isLiked);
-                    return dto;
-                }).toList());
+                .map(t->postMapper.toResponsePostDTO(t,utente)).toList());
         entity.setTotalPages(pagePost.getTotalPages());
         entity.setCurrentPageNumber(pageNumber);
         return entity;
@@ -59,7 +54,7 @@ public class PostServiceImpl implements PostService {
             createOrSearchHashtags(newPost, dto.getHashtags());
         }
         newPost.setOwner(utente);
-        return postMapper.toResponsePostDTO(postRepositoryJpa.save(newPost));
+        return postMapper.toResponsePostDTO(postRepositoryJpa.save(newPost),null);
     }
 
     @Override
@@ -101,7 +96,7 @@ public class PostServiceImpl implements PostService {
         {
             toUpdate=postRepositoryJpa.save(toUpdate);
         }
-        var response = postMapper.toResponsePostDTO(toUpdate);
+        var response = postMapper.toResponsePostDTO(toUpdate,utente);
         response.setIsLiked(checkLike(toUpdate,utente));
         return response;
 
@@ -110,7 +105,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<ResponsePostDTO> findAllByLoggedUser(Utente utente) {
         return postRepositoryJpa.findAllByUserId(utente.getId()).stream().map(t->{
-            var response = postMapper.toResponsePostDTO(t);
+            var response = postMapper.toResponsePostDTO(t,utente);
             response.setIsLiked(checkLike(t,utente));
             return response;
         }).toList();
@@ -119,7 +114,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<ResponsePostDTO> findAllByUserId(Long id,Utente utente) {
         return postRepositoryJpa.findAllByUserId(id).stream().map(t->{
-            var response = postMapper.toResponsePostDTO(t);
+            var response = postMapper.toResponsePostDTO(t,utente);
             response.setIsLiked(checkLike(t,utente));
             return response;
         }).toList();
@@ -147,7 +142,7 @@ public class PostServiceImpl implements PostService {
             utente.getLikedPosts().remove(temp);
         }
         utenteRepositoryJpa.save(utente);
-        var response =  postMapper.toResponsePostDTO(toLike);
+        var response =  postMapper.toResponsePostDTO(postRepositoryJpa.save(toLike),utente);
         response.setIsLiked(checkLike(toLike,utente));
         return response;
 
@@ -185,7 +180,9 @@ public class PostServiceImpl implements PostService {
     }
 
     private boolean checkLike(Post post, Utente utente){
+//        if(post.getOwner().getId().equals(utente.getId()))return false;
         return post.getUserLikes().stream().anyMatch(t->t.getId().equals(utente.getId()));
     }
+
 }
 

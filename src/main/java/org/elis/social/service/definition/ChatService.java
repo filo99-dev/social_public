@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ChatService {
     ResponseChatDTO insert(InsertChatDTO dto, Utente utente);
-    List<ResponseChatDTO> findAllByUserId(Long id);
+    List<ResponseChatDTO> findAllByUserId(Long id,Utente tokenUser);
     void deleteById(Long id, Utente utente);
 }

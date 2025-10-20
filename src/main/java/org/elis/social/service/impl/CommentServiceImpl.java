@@ -36,8 +36,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<ResponseCommentDTO> findAllByPostId(Long id) {
-        return commentRepositoryJpa.findAllByPostId(id).stream().map(commentMapper::toResponseCommentDto).toList();
+    public List<ResponseCommentDTO> findAllByPostId(Long id,Utente tokenUser) {
+        return commentRepositoryJpa.findAllByPostId(id).stream().map(t->commentMapper.toResponseCommentDto(t,tokenUser)).toList();
     }
 
     @Override

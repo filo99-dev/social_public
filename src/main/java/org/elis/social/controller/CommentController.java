@@ -17,9 +17,10 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
-    @GetMapping("/all/comment/post/{id}")
-    public ResponseEntity<List<ResponseCommentDTO>> findAllByPostId(@PathVariable Long id){
-        return ResponseEntity.ok(commentService.findAllByPostId(id));
+    @GetMapping("/base/comment/post/{id}")
+    public ResponseEntity<List<ResponseCommentDTO>> findAllByPostId(@PathVariable Long id,Authentication authentication){
+        Utente u = (Utente)authentication.getPrincipal();
+        return ResponseEntity.ok(commentService.findAllByPostId(id,u));
     }
     @PostMapping("/base/comment")
     public ResponseEntity<Void> insert(@Valid @RequestBody InsertCommentDTO dto, Authentication auth){

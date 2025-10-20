@@ -29,7 +29,7 @@ public class Utente implements UserDetails {
     private String phoneNumber;
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(uniqueConstraints = @UniqueConstraint(columnNames = {"utente_id","followers_id"}))
     private List<Utente> followers;
     @ManyToMany

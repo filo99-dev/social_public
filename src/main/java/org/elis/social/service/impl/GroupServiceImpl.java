@@ -45,7 +45,7 @@ public class GroupServiceImpl implements GroupService {
             newGroup.getMembers().add(u);
             utenteRepositoryJpa.save(u);
         }
-        return groupMapper.toResponseGroupDTO(newGroup);
+        return groupMapper.toResponseGroupDTO(newGroup,utente);
     }
 
     @Override

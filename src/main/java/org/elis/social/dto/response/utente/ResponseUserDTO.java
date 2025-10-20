@@ -14,4 +14,6 @@ public class ResponseUserDTO {
     private String username;
     private String phoneNumber;
     private Ruolo role;
+    private Boolean isFollowed;
+    private Boolean isFollowing;
 }

@@ -27,7 +27,7 @@ public class ChatController {
     public ResponseEntity<List<ResponseChatDTO>> findAllByOwner(Authentication auth)
     {
         Utente u = (Utente)auth.getPrincipal();
-        return ResponseEntity.ok(chatService.findAllByUserId(u.getId()));
+        return ResponseEntity.ok(chatService.findAllByUserId(u.getId(),u));
     }
     @DeleteMapping("/base/chat/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id, Authentication auth)

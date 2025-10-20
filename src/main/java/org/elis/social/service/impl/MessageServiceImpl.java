@@ -49,7 +49,7 @@ public class MessageServiceImpl implements MessageService {
             toSend.setChat(toSendTo);
         }
         toSend=messageRepositoryJpa.save(toSend);
-        return messageMapper.toResponseMessageDto(toSend);
+        return messageMapper.toResponseMessageDto(toSend,sender);
     }
 
     @Override
@@ -59,18 +59,18 @@ public class MessageServiceImpl implements MessageService {
         }
         Message toUpdate = messageRepositoryJpa.findById(dto.getId()).orElseThrow(()->new NotFoundException("messaggio non trovato per id: "+dto.getId()));
         toUpdate.setText(dto.getNewText());
-        return messageMapper.toResponseMessageDto(messageRepositoryJpa.save(toUpdate));
+        return messageMapper.toResponseMessageDto(messageRepositoryJpa.save(toUpdate),sender);
     }
 
     @Override
     public List<ResponseMessageDTO> findAllByGroupId(Long id, Utente utente) {
         checkIfUserIsInGroup(utente.getId(),id);
-        return messageRepositoryJpa.findAllByGroupId(id).stream().map(messageMapper::toResponseMessageDto).toList();
+        return messageRepositoryJpa.findAllByGroupId(id).stream().map(t->messageMapper.toResponseMessageDto(t,utente)).toList();
     }
 
     @Override
     public List<ResponseMessageDTO> findAllByChatId(Long id, Utente utente) {
-        return messageRepositoryJpa.findAllByChatId(id).stream().map(messageMapper::toResponseMessageDto).toList();
+        return messageRepositoryJpa.findAllByChatId(id).stream().map(t->messageMapper.toResponseMessageDto(t,utente)).toList();
     }
 
     private void checkMessageValidity(InsertMessageDTO dto){

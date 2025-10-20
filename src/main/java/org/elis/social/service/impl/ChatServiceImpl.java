@@ -51,12 +51,12 @@ public class ChatServiceImpl implements ChatService {
         messageRepositoryJpa.save(firstMessage);
         newChat.setUsers(List.of(sender,receiver));
 
-        return chatMapper.toResponseChatDto(newChat);
+        return chatMapper.toResponseChatDto(newChat,sender);
     }
 
     @Override
-    public List<ResponseChatDTO> findAllByUserId(Long id) {
-        return chatRepositoryJpa.findAllByUserId(id).stream().map(chatMapper::toResponseChatDto).toList();
+    public List<ResponseChatDTO> findAllByUserId(Long id,Utente tokenUser) {
+        return chatRepositoryJpa.findAllByUserId(id).stream().map(t->chatMapper.toResponseChatDto(t,tokenUser)).toList();
     }
 
     @Override

@@ -17,14 +17,19 @@ public class UtenteMapper {
         u.setPhoneNumber(dto.getPhoneNumber());
         return u;
     }
-    public ResponseUserDTO toResponseUserDto(Utente entity)
+    public ResponseUserDTO toResponseUserDto(Utente tokenUser,Utente other)
     {
-        ResponseUserDTO dto = new ResponseUserDTO();
-        dto.setId(entity.getId());
-        dto.setEmail(entity.getEmail());
-        dto.setPhoneNumber(entity.getPhoneNumber());
-        dto.setUsername(entity.getUsername());
-        dto.setRole(entity.getRole());
-        return dto;
+
+        ResponseUserDTO response = new ResponseUserDTO();
+        response.setUsername(other.getUsername());
+        response.setId(other.getId());
+        response.setEmail(other.getEmail());
+        response.setRole(other.getRole());
+        response.setPhoneNumber(other.getPhoneNumber());
+        if(tokenUser != null){
+            response.setIsFollowed(other.getFollowers().stream().anyMatch(t->t.getId().equals(tokenUser.getId())));
+            response.setIsFollowing(other.getFollowers().stream().anyMatch(t->t.getId().equals(tokenUser.getId())));
+        }
+        return response;
     }
 }

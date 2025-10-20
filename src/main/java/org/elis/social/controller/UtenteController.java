@@ -6,7 +6,6 @@ import org.elis.social.dto.request.utente.InsertFollowDTO;
 import org.elis.social.dto.request.utente.LoginDTO;
 import org.elis.social.dto.request.utente.RegisterUserDTO;
 import org.elis.social.dto.response.utente.ResponseUserDTO;
-import org.elis.social.dto.response.utente.ResponseUtenteWithFollowFlagDTO;
 import org.elis.social.model.Utente;
 import org.elis.social.security.jwt.JwtUtilities;
 import org.elis.social.service.definition.UtenteService;
@@ -26,12 +25,12 @@ public class UtenteController {
     private final JwtUtilities jwtUtilities;
 
     @GetMapping("/base/findbyid/{id}")
-    public ResponseEntity<ResponseUtenteWithFollowFlagDTO> findById(@PathVariable Long id, Authentication auth) {
+    public ResponseEntity<ResponseUserDTO> findById(@PathVariable Long id, Authentication auth) {
         Utente u = (Utente) auth.getPrincipal();
         return ResponseEntity.ok(utenteService.findById(id,u));
     }
     @GetMapping("/base/findbyusername/{username}")
-    public ResponseEntity<ResponseUtenteWithFollowFlagDTO>  findUtenteWithFollowByUsername(@PathVariable String username, Authentication auth) {
+    public ResponseEntity<ResponseUserDTO>  findUtenteWithFollowByUsername(@PathVariable String username, Authentication auth) {
         Utente u = (Utente) auth.getPrincipal();
         return ResponseEntity.ok(utenteService.findWithFollowByUsername(username,u));
     }
@@ -40,10 +39,11 @@ public class UtenteController {
         utenteService.checkUsernameAvailability(username);
         return ResponseEntity.ok().build();
     }
-    @GetMapping("/all/likes/post/{id}")
-    public ResponseEntity<List<ResponseUserDTO>> findAllLikesByPostId(@PathVariable Long id)
+    @GetMapping("/base/likes/post/{id}")
+    public ResponseEntity<List<ResponseUserDTO>> findAllLikesByPostId(@PathVariable Long id, Authentication auth)
     {
-        return ResponseEntity.ok(utenteService.findAllUserLikesByPostId(id));
+        Utente u = (Utente) auth.getPrincipal();
+        return ResponseEntity.ok(utenteService.findAllUserLikesByPostId(id,u));
     }
 
     @PostMapping("/all/login")
@@ -72,12 +72,13 @@ public class UtenteController {
     public ResponseEntity<List<ResponseUserDTO>> findFollowersByUserToken(Authentication auth)
     {
         Utente u = (Utente)auth.getPrincipal();
-        return ResponseEntity.ok(utenteService.findAllFollowersByUserId(u.getId()));
+        return ResponseEntity.ok(utenteService.findAllFollowersByUserId(u.getId(),u));
     }
-    @GetMapping("/all/followers/{id}")
-    public ResponseEntity<List<ResponseUserDTO>> findFollowersByUserId(@PathVariable Long id)
+    @GetMapping("/base/followers/{id}")
+    public ResponseEntity<List<ResponseUserDTO>> findFollowersByUserId(@PathVariable Long id,Authentication auth)
     {
-        return ResponseEntity.ok(utenteService.findAllFollowersByUserId(id));
+        Utente u = (Utente)auth.getPrincipal();
+        return ResponseEntity.ok(utenteService.findAllFollowersByUserId(id,u));
     }
 
 }

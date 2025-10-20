@@ -5,7 +5,6 @@ import org.elis.social.dto.request.utente.InsertFollowDTO;
 import org.elis.social.dto.request.utente.LoginDTO;
 import org.elis.social.dto.request.utente.RegisterUserDTO;
 import org.elis.social.dto.response.utente.ResponseUserDTO;
-import org.elis.social.dto.response.utente.ResponseUtenteWithFollowFlagDTO;
 import org.elis.social.errorhandling.exceptions.NotFoundException;
 import org.elis.social.mapper.UtenteMapper;
 import org.elis.social.model.Ruolo;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +26,10 @@ public class UtenteServiceImpl implements UtenteService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public ResponseUtenteWithFollowFlagDTO findWithFollowByUsername(String username,Utente tokenUser) {
+    public ResponseUserDTO findWithFollowByUsername(String username,Utente tokenUser) {
         Utente toFind = utenteRepositoryJpa.findByUsername(username).orElseThrow(() -> new NotFoundException("utente non trovato per username "+username));
 
-        return toResponseUserDto(toFind, tokenUser);
+        return utenteMapper.toResponseUserDto(tokenUser,toFind);
     }
 
     @Override
@@ -42,22 +40,22 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
-    public List<ResponseUserDTO> findAllFollowersByUserId(Long id) {
+    public List<ResponseUserDTO> findAllFollowersByUserId(Long id, Utente tokenUser) {
 
         return utenteRepositoryJpa.findUserWithFollowersById(id)
                 .orElseThrow(()->new NotFoundException("utente non trovato per id: "+id))
-                .getFollowers().stream().map(utenteMapper::toResponseUserDto).toList();
+                .getFollowers().stream().map(t->utenteMapper.toResponseUserDto(tokenUser,t)).toList();
     }
 
     @Override
-    public ResponseUtenteWithFollowFlagDTO findById(Long id, Utente tokenUser) {
+    public ResponseUserDTO findById(Long id, Utente tokenUser) {
         var toFind = utenteRepositoryJpa.findById(id).orElseThrow(()->new NotFoundException("utente non trovato per id: "+id));
-        return toResponseUserDto(toFind, tokenUser);
+        return utenteMapper.toResponseUserDto(tokenUser,toFind);
     }
 
     @Override
-    public List<ResponseUserDTO> findAllUserLikesByPostId(Long id) {
-        return utenteRepositoryJpa.findLikesByPostId(id).stream().map(utenteMapper::toResponseUserDto).toList();
+    public List<ResponseUserDTO> findAllUserLikesByPostId(Long id,Utente tokenUser) {
+        return utenteRepositoryJpa.findLikesByPostId(id).stream().map(t->utenteMapper.toResponseUserDto(t,tokenUser)).toList();
     }
 
     @Override
@@ -75,7 +73,7 @@ public class UtenteServiceImpl implements UtenteService {
         {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"credenziali errate");
         }
-        return utenteMapper.toResponseUserDto(utenteLogin);
+        return utenteMapper.toResponseUserDto(null,utenteLogin);
     }
 
     @Override
@@ -97,17 +95,5 @@ public class UtenteServiceImpl implements UtenteService {
             utenteWithFollowers.getFollowers().add(follower);
         }
         utenteRepositoryJpa.save(utenteWithFollowers);
-    }
-    private ResponseUtenteWithFollowFlagDTO toResponseUserDto(Utente found,Utente tokenUser) {
-
-        ResponseUtenteWithFollowFlagDTO response = new ResponseUtenteWithFollowFlagDTO();
-        response.setUsername(found.getUsername());
-        response.setId(found.getId());
-        response.setEmail(found.getEmail());
-        response.setRole(found.getRole());
-        response.setPhoneNumber(found.getPhoneNumber());
-        response.setIsFollowed(found.getFollowers().stream().anyMatch(t->t.getId().equals(tokenUser.getId())));
-        response.setIsFollowing(found.getFollowers().stream().anyMatch(t->t.getId().equals(tokenUser.getId())));
-        return response;
     }
 }

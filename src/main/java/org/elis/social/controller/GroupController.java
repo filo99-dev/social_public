@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class GroupController {
     private final GroupService groupService;
+    //TODO tutti i gruppi per token user
     @PostMapping("/base/group")
     public ResponseEntity<ResponseGroupDTO> insert(@Valid @RequestBody InsertGroupDTO dto, Authentication auth)
     {

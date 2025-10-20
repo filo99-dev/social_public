@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ChatMapper {
     private final UtenteMapper utenteMapper;
-    public ResponseChatDTO toResponseChatDto(Chat entity)
+    public ResponseChatDTO toResponseChatDto(Chat entity, Utente tokenUser)
     {
         ResponseChatDTO dto = new ResponseChatDTO();
         dto.setId(entity.getId());
-        dto.setMembers(entity.getUsers().stream().map(utenteMapper::toResponseUserDto).toList());
+        dto.setMembers(entity.getUsers().stream().map(t->utenteMapper.toResponseUserDto(tokenUser,t)).toList());
         return dto;
     }
 }

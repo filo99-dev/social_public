@@ -17,14 +17,14 @@ public class PostMapper {
     private final UtenteMapper utenteMapper;
     private final HashtagMapper hashtagMapper;
     private final CommentMapper commentMapper;
-    public ResponsePostDTO toResponsePostDTO(Post entity){
+    public ResponsePostDTO toResponsePostDTO(Post entity, Utente tokenUser){
         ResponsePostDTO dto = new ResponsePostDTO();
         dto.setId(entity.getId());
         dto.setText(entity.getText());
         dto.setCreatedAt(entity.getCreationDateTime());
         dto.setUpdatedAt(entity.getLastUpdateDateTime());
 
-        dto.setOwner(utenteMapper.toResponseUserDto(entity.getOwner()));
+        dto.setOwner(utenteMapper.toResponseUserDto(tokenUser,entity.getOwner()));
         List<Utente> utentiLikes = entity.getUserLikes();
         if(utentiLikes!=null)
         {

@@ -25,9 +25,10 @@ public class UtenteController {
     private final UtenteService utenteService;
     private final JwtUtilities jwtUtilities;
 
-    @GetMapping("/all/findbyid/{id}")
-    public ResponseEntity<ResponseUtenteWithFollowFlagDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(utenteService.findById(id));
+    @GetMapping("/base/findbyid/{id}")
+    public ResponseEntity<ResponseUtenteWithFollowFlagDTO> findById(@PathVariable Long id, Authentication auth) {
+        Utente u = (Utente) auth.getPrincipal();
+        return ResponseEntity.ok(utenteService.findById(id,u));
     }
     @GetMapping("/base/findbyusername/{username}")
     public ResponseEntity<ResponseUtenteWithFollowFlagDTO>  findUtenteWithFollowByUsername(@PathVariable String username, Authentication auth) {

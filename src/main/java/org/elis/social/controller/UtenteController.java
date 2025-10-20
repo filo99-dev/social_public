@@ -59,7 +59,7 @@ public class UtenteController {
         return ResponseEntity.ok().build();
     }
     @PostMapping("/base/follow")
-    public ResponseEntity<Void> register(@Valid @RequestBody InsertFollowDTO dto, Authentication auth)
+    public ResponseEntity<Void> follow(@Valid @RequestBody InsertFollowDTO dto, Authentication auth)
     {
         Utente u = (Utente)auth.getPrincipal();
         utenteService.follow(dto,u);

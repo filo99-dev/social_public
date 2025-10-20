@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -132,6 +133,15 @@ public class MyErrorHandlers {
         dto.setMessage(ex.toString());
         dto.setStatus(status.name());
         dto.setPath(wr.getDescription(false));
+        return ResponseEntity.status(status).body(dto);
+    }
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDTO> methodNotSupportedHandler(HttpRequestMethodNotSupportedException ex, WebRequest request) throws Throwable {
+        HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
+        var dto = new ErrorResponseDTO();
+        dto.setMessage(ex.toString());
+        dto.setStatus(status.name());
+        dto.setPath(request.getDescription(false));
         return ResponseEntity.status(status).body(dto);
     }
 }

@@ -5,6 +5,7 @@ import org.elis.social.dto.request.utente.InsertFollowDTO;
 import org.elis.social.dto.request.utente.LoginDTO;
 import org.elis.social.dto.request.utente.RegisterUserDTO;
 import org.elis.social.dto.response.utente.ResponseUserDTO;
+import org.elis.social.dto.response.utente.ResponseUtenteWithFollowFlagDTO;
 import org.elis.social.errorhandling.exceptions.NotFoundException;
 import org.elis.social.mapper.UtenteMapper;
 import org.elis.social.model.Ruolo;
@@ -25,6 +26,19 @@ public class UtenteServiceImpl implements UtenteService {
     private final UtenteMapper utenteMapper;
     private final UtenteRepositoryJpa utenteRepositoryJpa;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public ResponseUtenteWithFollowFlagDTO findWithFollowByUsername(String username,Utente tokenUser) {
+        Utente toFind = utenteRepositoryJpa.findByUsername(username).orElseThrow(() -> new NotFoundException("utente non trovato per username "+username));
+        ResponseUtenteWithFollowFlagDTO response = new ResponseUtenteWithFollowFlagDTO();
+        response.setUsername(toFind.getUsername());
+        response.setId(toFind.getId());
+        response.setEmail(toFind.getEmail());
+        response.setRole(toFind.getRole());
+        response.setPhoneNumber(toFind.getPhoneNumber());
+        response.setIsFollowed(toFind.getFollowers().stream().anyMatch(t->t.getId().equals(tokenUser.getId())));
+        return response;
+    }
 
     @Override
     public void checkUsernameAvailability(String username) {

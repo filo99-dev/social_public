@@ -6,6 +6,7 @@ import org.elis.social.dto.request.utente.InsertFollowDTO;
 import org.elis.social.dto.request.utente.LoginDTO;
 import org.elis.social.dto.request.utente.RegisterUserDTO;
 import org.elis.social.dto.response.utente.ResponseUserDTO;
+import org.elis.social.dto.response.utente.ResponseUtenteWithFollowFlagDTO;
 import org.elis.social.model.Utente;
 import org.elis.social.security.jwt.JwtUtilities;
 import org.elis.social.service.definition.UtenteService;
@@ -23,6 +24,15 @@ public class UtenteController {
     private final UtenteService utenteService;
     private final JwtUtilities jwtUtilities;
 
+    @GetMapping("/all/findbyid/{id}")
+    public ResponseEntity<ResponseUserDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(utenteService.findById(id));
+    }
+    @GetMapping("/base/findbyusername/{username}")
+    public ResponseEntity<ResponseUtenteWithFollowFlagDTO>  findUtenteWithFollowByUsername(@PathVariable String username, Authentication auth) {
+        Utente u = (Utente) auth.getPrincipal();
+        return ResponseEntity.ok(utenteService.findWithFollowByUsername(username,u));
+    }
     @GetMapping("/all/username/check/{username}")
     public ResponseEntity<Void> checkUsername(@PathVariable String username) {
         utenteService.checkUsernameAvailability(username);

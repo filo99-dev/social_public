@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class UtenteController {
     private final JwtUtilities jwtUtilities;
 
     @GetMapping("/all/findbyid/{id}")
-    public ResponseEntity<ResponseUserDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<ResponseUtenteWithFollowFlagDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(utenteService.findById(id));
     }
     @GetMapping("/base/findbyusername/{username}")
@@ -60,6 +61,9 @@ public class UtenteController {
     public ResponseEntity<Void> register(@Valid @RequestBody InsertFollowDTO dto, Authentication auth)
     {
         Utente u = (Utente)auth.getPrincipal();
+        if(dto.getToFollowUserId().equals(u.getId())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are already a following user");
+        }
         utenteService.follow(dto,u);
         return ResponseEntity.ok().build();
     }

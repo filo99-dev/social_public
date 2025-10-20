@@ -10,4 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ResponseUtenteWithFollowFlagDTO extends ResponseUserDTO{
     private Boolean isFollowed;
+    private Boolean isFollowing;
 }

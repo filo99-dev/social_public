@@ -30,14 +30,8 @@ public class UtenteServiceImpl implements UtenteService {
     @Override
     public ResponseUtenteWithFollowFlagDTO findWithFollowByUsername(String username,Utente tokenUser) {
         Utente toFind = utenteRepositoryJpa.findByUsername(username).orElseThrow(() -> new NotFoundException("utente non trovato per username "+username));
-        ResponseUtenteWithFollowFlagDTO response = new ResponseUtenteWithFollowFlagDTO();
-        response.setUsername(toFind.getUsername());
-        response.setId(toFind.getId());
-        response.setEmail(toFind.getEmail());
-        response.setRole(toFind.getRole());
-        response.setPhoneNumber(toFind.getPhoneNumber());
-        response.setIsFollowed(toFind.getFollowers().stream().anyMatch(t->t.getId().equals(tokenUser.getId())));
-        return response;
+
+        return toResponseUserDto(toFind, tokenUser);
     }
 
     @Override
@@ -56,8 +50,9 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
-    public ResponseUserDTO findById(Long id) {
-        return utenteMapper.toResponseUserDto(utenteRepositoryJpa.findById(id).orElseThrow(()->new NotFoundException("utente non trovato per id: "+id)));
+    public ResponseUtenteWithFollowFlagDTO findById(Long id, Utente tokenUser) {
+        var toFind = utenteRepositoryJpa.findById(id).orElseThrow(()->new NotFoundException("utente non trovato per id: "+id));
+        return toResponseUserDto(toFind, tokenUser);
     }
 
     @Override
@@ -102,5 +97,17 @@ public class UtenteServiceImpl implements UtenteService {
             utenteWithFollowers.getFollowers().add(follower);
         }
         utenteRepositoryJpa.save(utenteWithFollowers);
+    }
+    private ResponseUtenteWithFollowFlagDTO toResponseUserDto(Utente found,Utente tokenUser) {
+
+        ResponseUtenteWithFollowFlagDTO response = new ResponseUtenteWithFollowFlagDTO();
+        response.setUsername(found.getUsername());
+        response.setId(found.getId());
+        response.setEmail(found.getEmail());
+        response.setRole(found.getRole());
+        response.setPhoneNumber(found.getPhoneNumber());
+        response.setIsFollowed(found.getFollowers().stream().anyMatch(t->t.getId().equals(tokenUser.getId())));
+        response.setIsFollowing(found.getFollowers().stream().anyMatch(t->t.getId().equals(tokenUser.getId())));
+        return response;
     }
 }

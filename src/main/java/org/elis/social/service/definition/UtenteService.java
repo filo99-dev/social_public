@@ -14,7 +14,7 @@ public interface UtenteService {
     ResponseUtenteWithFollowFlagDTO findWithFollowByUsername(String username, Utente tokenUser);
     void checkUsernameAvailability(String username);
     List<ResponseUserDTO> findAllFollowersByUserId(Long id);
-    ResponseUserDTO findById(Long id);
+    ResponseUtenteWithFollowFlagDTO findById(Long id, Utente tokenUser);
     List<ResponseUserDTO> findAllUserLikesByPostId(Long id);
     void registerBaseUser(RegisterUserDTO dto);
     ResponseUserDTO login(LoginDTO dto);

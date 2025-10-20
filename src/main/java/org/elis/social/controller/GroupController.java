@@ -11,11 +11,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class GroupController {
     private final GroupService groupService;
-    //TODO tutti i gruppi per token user
+    @GetMapping("/base")
+    public ResponseEntity<List<ResponseGroupDTO>> base(Authentication auth) {
+        Utente u = (Utente) auth.getPrincipal();
+        return ResponseEntity.ok(groupService.findAllByTokenUser(u));
+    }
     @PostMapping("/base/group")
     public ResponseEntity<ResponseGroupDTO> insert(@Valid @RequestBody InsertGroupDTO dto, Authentication auth)
     {

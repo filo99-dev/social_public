@@ -49,6 +49,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public List<ResponseGroupDTO> findAllByTokenUser(Utente tokenUser) {
+        return groupRepositoryJpa.findAllByTokenUserId(tokenUser.getId()).stream().map(t->groupMapper.toResponseGroupDTO(t,tokenUser)).toList();
+    }
+
+    @Override
     public void addMember(AddOrRemoveMemberDTO dto, Utente owner) {
        ChatGroup group = findGroupById(dto.getGroupId());
        checkGroupOwner(owner,group);

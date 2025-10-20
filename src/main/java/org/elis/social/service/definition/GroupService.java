@@ -6,8 +6,11 @@ import org.elis.social.dto.response.group.ResponseGroupDTO;
 import org.elis.social.model.Utente;
 import org.springframework.security.core.Authentication;
 
+import java.util.List;
+
 public interface GroupService {
     ResponseGroupDTO insert(InsertGroupDTO dto, Utente utente);
+    List<ResponseGroupDTO> findAllByTokenUser(Utente tokenUser);
     void addMember(AddOrRemoveMemberDTO dto, Utente owner);
     void removeMember(AddOrRemoveMemberDTO dto, Utente owner);
     void delete(Long groupId, Utente owner);

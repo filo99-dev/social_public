@@ -77,12 +77,16 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
-    public void follow(InsertFollowDTO dto, Utente follower) {
+    public void follow(InsertFollowDTO dto, Utente tokenUser) {
+        if(dto.getToFollowUserId().equals(tokenUser.getId()))
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"non puoi seguirti da solo");
+        }
         Utente utenteWithFollowers = utenteRepositoryJpa.findUserWithFollowersById(dto.getToFollowUserId()).orElseThrow(()->new NotFoundException("utente non trovato per id: "+dto.getToFollowUserId()));
         Utente temp = null;
         for(Utente u : utenteWithFollowers.getFollowers())
         {
-            if(u.getId().equals(follower.getId()))
+            if(u.getId().equals(tokenUser.getId()))
             {
                 temp=u;
             }
@@ -92,7 +96,7 @@ public class UtenteServiceImpl implements UtenteService {
             utenteWithFollowers.getFollowers().remove(temp);
         }
         else{
-            utenteWithFollowers.getFollowers().add(follower);
+            utenteWithFollowers.getFollowers().add(tokenUser);
         }
         utenteRepositoryJpa.save(utenteWithFollowers);
     }

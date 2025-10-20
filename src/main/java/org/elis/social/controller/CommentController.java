@@ -23,10 +23,10 @@ public class CommentController {
         return ResponseEntity.ok(commentService.findAllByPostId(id,u));
     }
     @PostMapping("/base/comment")
-    public ResponseEntity<Void> insert(@Valid @RequestBody InsertCommentDTO dto, Authentication auth){
+    public ResponseEntity<ResponseCommentDTO> insert(@Valid @RequestBody InsertCommentDTO dto, Authentication auth){
         Utente u = (Utente)auth.getPrincipal();
-        commentService.insert(dto,u);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok().body(commentService.insert(dto,u));
     }
     @DeleteMapping("/base/comment/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id, Authentication auth)

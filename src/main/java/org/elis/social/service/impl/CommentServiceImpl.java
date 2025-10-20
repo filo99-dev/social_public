@@ -3,6 +3,7 @@ package org.elis.social.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.elis.social.dto.request.comment.InsertCommentDTO;
 import org.elis.social.dto.response.comment.ResponseCommentDTO;
+import org.elis.social.dto.response.utente.ResponseUserDTO;
 import org.elis.social.errorhandling.exceptions.NotFoundException;
 import org.elis.social.errorhandling.exceptions.OwnershipException;
 import org.elis.social.mapper.CommentMapper;
@@ -26,13 +27,13 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    public void insert(InsertCommentDTO dto, Utente utente) {
-        Post toComment = postRepositoryJpa.findById(dto.getPostId()).orElseThrow(()->new NotFoundException("Commento non trovato per id: "+dto.getPostId()));
+    public ResponseCommentDTO insert(InsertCommentDTO dto, Utente utente) {
+        Post toComment = postRepositoryJpa.findById(dto.getPostId()).orElseThrow(()->new NotFoundException("Post non trovato per id: "+dto.getPostId()));
         Comment newComment = new Comment();
         newComment.setText(dto.getText());
         newComment.setPost(toComment);
         newComment.setOwner(utente);
-        commentRepositoryJpa.save(newComment);
+        return commentMapper.toResponseCommentDto(commentRepositoryJpa.save(newComment),utente);
     }
 
     @Override

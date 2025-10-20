@@ -7,7 +7,7 @@ import org.elis.social.model.Utente;
 import java.util.List;
 
 public interface CommentService {
-    void insert(InsertCommentDTO dto, Utente utente);
+    ResponseCommentDTO insert(InsertCommentDTO dto, Utente utente);
     List<ResponseCommentDTO> findAllByPostId(Long id, Utente utente);
     void deleteById(Long id, Utente utente);
 }

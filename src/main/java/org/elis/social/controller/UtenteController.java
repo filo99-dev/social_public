@@ -62,9 +62,6 @@ public class UtenteController {
     public ResponseEntity<Void> register(@Valid @RequestBody InsertFollowDTO dto, Authentication auth)
     {
         Utente u = (Utente)auth.getPrincipal();
-        if(dto.getToFollowUserId().equals(u.getId())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are already a following user");
-        }
         utenteService.follow(dto,u);
         return ResponseEntity.ok().build();
     }

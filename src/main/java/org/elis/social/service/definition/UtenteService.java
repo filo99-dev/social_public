@@ -16,5 +16,5 @@ public interface UtenteService {
     List<ResponseUserDTO> findAllUserLikesByPostId(Long id, Utente tokenUser);
     void registerBaseUser(RegisterUserDTO dto);
     ResponseUserDTO login(LoginDTO dto);
-    void follow(InsertFollowDTO dto, Utente follower);
+    void follow(InsertFollowDTO dto, Utente tokenUser);
 }

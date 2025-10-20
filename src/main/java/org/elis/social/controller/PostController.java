@@ -22,14 +22,16 @@ public class PostController {
 
 
 
-    @GetMapping("/all/post/paged/{pageNumber}")
-    public ResponseEntity<PagedEntity<ResponsePostDTO>> postsByPage(@PathVariable Integer pageNumber) {
-        return ResponseEntity.ok(postService.findByPage(pageNumber));
+    @GetMapping("/base/post/paged/{pageNumber}")
+    public ResponseEntity<PagedEntity<ResponsePostDTO>> postsByPage(@PathVariable Integer pageNumber, Authentication auth) {
+        Utente u =(Utente) auth.getPrincipal();
+        return ResponseEntity.ok(postService.findByPage(pageNumber,u));
     }
     //Prende tutti i post in base all'id passato tramite path
-    @GetMapping("/all/post/user/{id}")
-    public ResponseEntity<List<ResponsePostDTO>> findAllByUserId(@PathVariable Long id){
-        return ResponseEntity.ok(postService.findAllByUserId(id));
+    @GetMapping("/base/post/user/{id}")
+    public ResponseEntity<List<ResponsePostDTO>> findAllByUserId(@PathVariable Long id, Authentication auth){
+        Utente u =(Utente) auth.getPrincipal();
+        return ResponseEntity.ok(postService.findAllByUserId(id,u));
     }
     //Prende tutti i post dell'utente proprietario del token
     @GetMapping("/base/post")

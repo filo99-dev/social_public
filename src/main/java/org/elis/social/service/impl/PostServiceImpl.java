@@ -32,11 +32,16 @@ public class PostServiceImpl implements PostService {
     private final HashtagRepositoryJpa hashtagRepositoryJpa;
 
     @Override
-    public PagedEntity<ResponsePostDTO> findByPage(Integer pageNumber) {
+    public PagedEntity<ResponsePostDTO> findByPage(Integer pageNumber,Utente utente) {
         Page<Post> pagePost = postRepositoryJpa.findAll(PageRequest.of(pageNumber,10, Sort.by("creationDateTime").descending()));
         PagedEntity<ResponsePostDTO> entity = new PagedEntity<>();
         entity.setItems(pagePost.getContent().stream()
-                .map(postMapper::toResponsePostDTO).toList());
+                .map(t->{
+                    boolean isLiked = checkLike(t,utente);
+                    ResponsePostDTO dto = postMapper.toResponsePostDTO(t);
+                    dto.setIsLiked(isLiked);
+                    return dto;
+                }).toList());
         entity.setTotalPages(pagePost.getTotalPages());
         entity.setCurrentPageNumber(pageNumber);
         return entity;
@@ -96,18 +101,28 @@ public class PostServiceImpl implements PostService {
         {
             toUpdate=postRepositoryJpa.save(toUpdate);
         }
-        return postMapper.toResponsePostDTO(toUpdate);
+        var response = postMapper.toResponsePostDTO(toUpdate);
+        response.setIsLiked(checkLike(toUpdate,utente));
+        return response;
 
     }
 
     @Override
     public List<ResponsePostDTO> findAllByLoggedUser(Utente utente) {
-        return postRepositoryJpa.findAllByUserId(utente.getId()).stream().map(postMapper::toResponsePostDTO).toList();
+        return postRepositoryJpa.findAllByUserId(utente.getId()).stream().map(t->{
+            var response = postMapper.toResponsePostDTO(t);
+            response.setIsLiked(checkLike(t,utente));
+            return response;
+        }).toList();
     }
 
     @Override
-    public List<ResponsePostDTO> findAllByUserId(Long id) {
-        return postRepositoryJpa.findAllByUserId(id).stream().map(postMapper::toResponsePostDTO).toList();
+    public List<ResponsePostDTO> findAllByUserId(Long id,Utente utente) {
+        return postRepositoryJpa.findAllByUserId(id).stream().map(t->{
+            var response = postMapper.toResponsePostDTO(t);
+            response.setIsLiked(checkLike(t,utente));
+            return response;
+        }).toList();
     }
 
     @Override
@@ -132,7 +147,9 @@ public class PostServiceImpl implements PostService {
             utente.getLikedPosts().remove(temp);
         }
         utenteRepositoryJpa.save(utente);
-        return postMapper.toResponsePostDTO(toLike);
+        var response =  postMapper.toResponsePostDTO(toLike);
+        response.setIsLiked(checkLike(toLike,utente));
+        return response;
 
     }
 
@@ -167,4 +184,8 @@ public class PostServiceImpl implements PostService {
         return postRepositoryJpa.findById(id).orElseThrow(()->new NotFoundException("post non trovato per id: "+id));
     }
 
+    private boolean checkLike(Post post, Utente utente){
+        return post.getUserLikes().stream().anyMatch(t->t.getId().equals(utente.getId()));
+    }
 }
+

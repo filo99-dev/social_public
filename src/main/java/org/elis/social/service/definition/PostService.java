@@ -10,11 +10,11 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface PostService {
-    PagedEntity<ResponsePostDTO> findByPage(Integer pageNumber);
+    PagedEntity<ResponsePostDTO> findByPage(Integer pageNumber,Utente utente);
     ResponsePostDTO insert(InsertPostDTO dto, Utente utente);
     void deleteById(Long id, Utente utente);
     ResponsePostDTO update(UpdatePostDTO dto, Utente utente);
     List<ResponsePostDTO> findAllByLoggedUser(Utente utente);
-    List<ResponsePostDTO> findAllByUserId(Long id);
+    List<ResponsePostDTO> findAllByUserId(Long id,Utente utente);
     ResponsePostDTO likeById(Long id, Utente utente);
 }

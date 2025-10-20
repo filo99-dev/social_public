@@ -21,6 +21,7 @@ public class ResponsePostDTO {
     private ResponseUserDTO owner;
     private Integer likeCount;
     private List<ResponseHashtagDTO> hashtags;
+    private Boolean isLiked;
 
 
 //    private List<ResponseUserDTO> userLikes;

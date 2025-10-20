@@ -97,7 +97,6 @@ public class PostServiceImpl implements PostService {
             toUpdate=postRepositoryJpa.save(toUpdate);
         }
         var response = postMapper.toResponsePostDTO(toUpdate,utente);
-        response.setIsLiked(checkLike(toUpdate,utente));
         return response;
 
     }
@@ -106,7 +105,6 @@ public class PostServiceImpl implements PostService {
     public List<ResponsePostDTO> findAllByLoggedUser(Utente utente) {
         return postRepositoryJpa.findAllByUserId(utente.getId()).stream().map(t->{
             var response = postMapper.toResponsePostDTO(t,utente);
-            response.setIsLiked(checkLike(t,utente));
             return response;
         }).toList();
     }
@@ -115,7 +113,6 @@ public class PostServiceImpl implements PostService {
     public List<ResponsePostDTO> findAllByUserId(Long id,Utente utente) {
         return postRepositoryJpa.findAllByUserId(id).stream().map(t->{
             var response = postMapper.toResponsePostDTO(t,utente);
-            response.setIsLiked(checkLike(t,utente));
             return response;
         }).toList();
     }
@@ -143,7 +140,6 @@ public class PostServiceImpl implements PostService {
         }
         utenteRepositoryJpa.save(utente);
         var response =  postMapper.toResponsePostDTO(postRepositoryJpa.save(toLike),utente);
-        response.setIsLiked(checkLike(toLike,utente));
         return response;
 
     }
@@ -179,10 +175,6 @@ public class PostServiceImpl implements PostService {
         return postRepositoryJpa.findById(id).orElseThrow(()->new NotFoundException("post non trovato per id: "+id));
     }
 
-    private boolean checkLike(Post post, Utente utente){
-//        if(post.getOwner().getId().equals(utente.getId()))return false;
-        return post.getUserLikes().stream().anyMatch(t->t.getId().equals(utente.getId()));
-    }
 
 }
 

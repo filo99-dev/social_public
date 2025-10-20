@@ -23,7 +23,8 @@ public class PostMapper {
         dto.setText(entity.getText());
         dto.setCreatedAt(entity.getCreationDateTime());
         dto.setUpdatedAt(entity.getLastUpdateDateTime());
-
+//        if(post.getOwner().getId().equals(utente.getId()))return false;
+            dto.setIsLiked(entity.getUserLikes().stream().anyMatch(t->t.getId().equals(tokenUser.getId())));;
         dto.setOwner(utenteMapper.toResponseUserDto(tokenUser,entity.getOwner()));
         List<Utente> utentiLikes = entity.getUserLikes();
         if(utentiLikes!=null)

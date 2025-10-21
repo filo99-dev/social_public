@@ -55,7 +55,7 @@ public class UtenteServiceImpl implements UtenteService {
 
     @Override
     public List<ResponseUserDTO> findAllUserLikesByPostId(Long id,Utente tokenUser) {
-        return utenteRepositoryJpa.findLikesByPostId(id).stream().map(t->utenteMapper.toResponseUserDto(t,tokenUser)).toList();
+        return utenteRepositoryJpa.findLikesByPostId(id).stream().map(t->utenteMapper.toResponseUserDto(tokenUser,t)).toList();
     }
 
     @Override

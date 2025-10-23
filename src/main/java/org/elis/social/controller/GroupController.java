@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GroupController {
     private final GroupService groupService;
-    @GetMapping("/base")
+    @GetMapping("/base/group")
     public ResponseEntity<List<ResponseGroupDTO>> base(Authentication auth) {
         Utente u = (Utente) auth.getPrincipal();
         return ResponseEntity.ok(groupService.findAllByTokenUser(u));

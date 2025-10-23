@@ -17,7 +17,7 @@ public class RegisterUserDTO {
     @Email(message = "l'email non rispetta il pattern corretto")
     @NotBlank(message = "email mancante o stringa vuota")
     private String email;
-    @Pattern(regexp = "^(\\((00|\\+)39\\)|(00|\\+)39)?(38[890]|34[7-90]|36[680]|33[3-90]|32[89])\\d{7}$",message = "il numero non rispetta il pattern di un numero di telefono")
+    @Pattern(regexp = "^\\+?(\\d{1,3})?[-. ]?(\\(?\\d{3}\\)?)[-. ]?(\\d{3})[-. ]?(\\d{4})$",message = "il numero non rispetta il pattern di un numero di telefono")
     @NotNull(message = "numero di telefono mancante")
     private String phoneNumber;
     @Pattern(regexp ="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",message = "la password deve contenere minimo 8 caratteri, un carattere minuscolo, un carattere maiuscolo, un numero e un carattere speciale")

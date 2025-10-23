@@ -9,6 +9,7 @@ import org.elis.social.model.Utente;
 import java.util.List;
 
 public interface UtenteService {
+    List<ResponseUserDTO> findAll(Utente tokenUser);
     ResponseUserDTO findWithFollowByUsername(String username, Utente tokenUser);
     void checkUsernameAvailability(String username);
     List<ResponseUserDTO> findAllFollowersByUserId(Long id, Utente tokenUser);

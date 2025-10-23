@@ -24,6 +24,11 @@ public class UtenteController {
     private final UtenteService utenteService;
     private final JwtUtilities jwtUtilities;
 
+    @GetMapping("/base/utente")
+    public ResponseEntity<List<ResponseUserDTO>> findALl(Authentication auth){
+        Utente u = (Utente) auth.getPrincipal();
+        return ResponseEntity.ok(utenteService.findAll(u)) ;
+    }
     @GetMapping("/base/findbyid/{id}")
     public ResponseEntity<ResponseUserDTO> findById(@PathVariable Long id, Authentication auth) {
         Utente u = (Utente) auth.getPrincipal();

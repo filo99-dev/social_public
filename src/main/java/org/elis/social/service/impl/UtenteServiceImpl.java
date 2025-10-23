@@ -26,6 +26,11 @@ public class UtenteServiceImpl implements UtenteService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    public List<ResponseUserDTO> findAll(Utente tokenUser) {
+        return utenteRepositoryJpa.findAll().stream().map(t->utenteMapper.toResponseUserDto(tokenUser,t)).toList();
+    }
+
+    @Override
     public ResponseUserDTO findWithFollowByUsername(String username,Utente tokenUser) {
         Utente toFind = utenteRepositoryJpa.findByUsername(username).orElseThrow(() -> new NotFoundException("utente non trovato per username "+username));
 

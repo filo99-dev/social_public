@@ -21,11 +21,15 @@ public class PostController {
     private final PostService postService;
 
 
-
-    @GetMapping("/base/post/paged/{pageNumber}")
-    public ResponseEntity<PagedEntity<ResponsePostDTO>> postsByPage(@PathVariable Integer pageNumber, Authentication auth) {
+    @GetMapping("/base/post/{hashtag}")
+    public ResponseEntity<List<ResponsePostDTO>> getPostsByHashtag(@PathVariable String hashtag, Authentication auth) {
         Utente u =(Utente) auth.getPrincipal();
-        return ResponseEntity.ok(postService.findByPage(pageNumber,u));
+        return ResponseEntity.ok(postService.findAllByHashtagName(hashtag,u));
+    }
+    @GetMapping("/base/post/findall")
+    public ResponseEntity<List<ResponsePostDTO>> postsByPage(Authentication auth) {
+        Utente u =(Utente) auth.getPrincipal();
+        return ResponseEntity.ok(postService.findAll(u));
     }
     //Prende tutti i post in base all'id passato tramite path
     @GetMapping("/base/post/user/{id}")

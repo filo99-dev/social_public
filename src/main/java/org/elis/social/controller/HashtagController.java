@@ -15,7 +15,7 @@ public class HashtagController {
     private final HashtagService service;
 
     @GetMapping("/all/hashtags/popular")
-    public ResponseEntity<List<ResponseHashtagDTO>> find10MostPopular(){
+    public ResponseEntity<List<ResponseHashtagDTO>> find10MostPopular() {
         return ResponseEntity.ok(service.find10MostPopular());
     }
 }

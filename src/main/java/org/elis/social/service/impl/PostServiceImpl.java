@@ -31,15 +31,15 @@ public class PostServiceImpl implements PostService {
     private final UtenteRepositoryJpa utenteRepositoryJpa;
     private final HashtagRepositoryJpa hashtagRepositoryJpa;
 
+
     @Override
-    public PagedEntity<ResponsePostDTO> findByPage(Integer pageNumber,Utente utente) {
-        Page<Post> pagePost = postRepositoryJpa.findAll(PageRequest.of(pageNumber,10, Sort.by("creationDateTime").descending()));
-        PagedEntity<ResponsePostDTO> entity = new PagedEntity<>();
-        entity.setItems(pagePost.getContent().stream()
-                .map(t->postMapper.toResponsePostDTO(t,utente)).toList());
-        entity.setTotalPages(pagePost.getTotalPages());
-        entity.setCurrentPageNumber(pageNumber);
-        return entity;
+    public List<ResponsePostDTO> findAllByHashtagName(String hashtag, Utente tokenUser) {
+        return postRepositoryJpa.findAllByHashtagName(hashtag).stream().map(t->postMapper.toResponsePostDTO(t,tokenUser)).toList();
+    }
+
+    @Override
+    public List<ResponsePostDTO> findAll(Utente utente) {
+        return postRepositoryJpa.findAll().stream().map(t->postMapper.toResponsePostDTO(t,utente)).toList();
     }
 
     @Override

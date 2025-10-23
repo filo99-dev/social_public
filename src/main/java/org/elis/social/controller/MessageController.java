@@ -34,11 +34,5 @@ public class MessageController {
         Utente u = (Utente) auth.getPrincipal();
         return ResponseEntity.ok(messageService.findAllByChatId(id,u));
     }
-    @PatchMapping("/base/message")
-    public ResponseEntity<ResponseMessageDTO> updateById(@Valid @RequestBody UpdateMessageDTO dto, Authentication auth)
-    {
-        Utente u = (Utente) auth.getPrincipal();
-        return ResponseEntity.ok(messageService.update(dto,u));
-    }
 
 }

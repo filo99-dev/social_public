@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.elis.social.dto.request.utente.InsertFollowDTO;
 import org.elis.social.dto.request.utente.LoginDTO;
 import org.elis.social.dto.request.utente.RegisterUserDTO;
+import org.elis.social.dto.response.utente.ResponseProfileDTO;
 import org.elis.social.dto.response.utente.ResponseUserDTO;
 import org.elis.social.errorhandling.exceptions.NotFoundException;
+import org.elis.social.mapper.PostMapper;
 import org.elis.social.mapper.UtenteMapper;
 import org.elis.social.model.Ruolo;
 import org.elis.social.model.Utente;
@@ -24,6 +26,18 @@ public class UtenteServiceImpl implements UtenteService {
     private final UtenteMapper utenteMapper;
     private final UtenteRepositoryJpa utenteRepositoryJpa;
     private final PasswordEncoder passwordEncoder;
+    private final PostMapper postMapper;
+
+    @Override
+    public ResponseProfileDTO findProfileById(Long id, Utente tokenUser) {
+        Utente toFind = utenteRepositoryJpa.findUserWithPostAndFollowersAndFollowedById(id).orElseThrow(() -> new NotFoundException("utente non trovato per id: "+id));
+        ResponseProfileDTO responseProfileDTO = new ResponseProfileDTO();
+        responseProfileDTO.setUser(utenteMapper.toResponseUserDto(tokenUser,toFind));
+        responseProfileDTO.setPosts(toFind.getPosts().stream().map(t->postMapper.toResponsePostDTO(t,tokenUser)).toList());
+        responseProfileDTO.setFollowerCount(toFind.getFollowers().size());
+        responseProfileDTO.setFollowedCount(toFind.getFollowed().size());
+        return responseProfileDTO;
+    }
 
     @Override
     public List<ResponseUserDTO> findAll(Utente tokenUser) {
@@ -54,7 +68,7 @@ public class UtenteServiceImpl implements UtenteService {
 
     @Override
     public ResponseUserDTO findById(Long id, Utente tokenUser) {
-        var toFind = utenteRepositoryJpa.findById(id).orElseThrow(()->new NotFoundException("utente non trovato per id: "+id));
+        var toFind = findById(id);
         return utenteMapper.toResponseUserDto(tokenUser,toFind);
     }
 
@@ -105,4 +119,10 @@ public class UtenteServiceImpl implements UtenteService {
         }
         utenteRepositoryJpa.save(utenteWithFollowers);
     }
+
+    private Utente findById(Long id)
+    {
+        return utenteRepositoryJpa.findById(id).orElseThrow(()->new NotFoundException("utente non trovato per id: "+id));
+    }
 }
+

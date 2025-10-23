@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.elis.social.dto.request.utente.InsertFollowDTO;
 import org.elis.social.dto.request.utente.LoginDTO;
 import org.elis.social.dto.request.utente.RegisterUserDTO;
+import org.elis.social.dto.response.utente.ResponseProfileDTO;
 import org.elis.social.dto.response.utente.ResponseUserDTO;
 import org.elis.social.model.Utente;
 import org.elis.social.security.jwt.JwtUtilities;
@@ -24,6 +25,11 @@ public class UtenteController {
     private final UtenteService utenteService;
     private final JwtUtilities jwtUtilities;
 
+    @GetMapping("/base/profile/{id}")
+    public ResponseEntity<ResponseProfileDTO> getProfileById(@PathVariable Long id, Authentication auth) {
+        Utente u = (Utente) auth.getPrincipal();
+        return ResponseEntity.ok(utenteService.findProfileById(id,u));
+    }
     @GetMapping("/base/utente")
     public ResponseEntity<List<ResponseUserDTO>> findALl(Authentication auth){
         Utente u = (Utente) auth.getPrincipal();

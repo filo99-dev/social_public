@@ -156,6 +156,7 @@ public class PostServiceImpl implements PostService {
 
     private void createOrSearchHashtags(Post post, List<String> hashtags)
     {
+        hashtags = hashtags.stream().distinct().toList();
         for(String hashtagName : hashtags)
         {
             if(!hashtagRepositoryJpa.existsByName(hashtagName))

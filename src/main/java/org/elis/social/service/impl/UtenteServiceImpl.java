@@ -61,7 +61,7 @@ public class UtenteServiceImpl implements UtenteService {
     @Override
     public List<ResponseUserDTO> findAllFollowersByUserId(Long id, Utente tokenUser) {
 
-        return utenteRepositoryJpa.findUserWithFollowersById(id)
+        return utenteRepositoryJpa.findUserWithFollowersAndFollowedById(id)
                 .orElseThrow(()->new NotFoundException("utente non trovato per id: "+id))
                 .getFollowers().stream().map(t->utenteMapper.toResponseUserDto(tokenUser,t)).toList();
     }
@@ -101,7 +101,8 @@ public class UtenteServiceImpl implements UtenteService {
         {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"non puoi seguirti da solo");
         }
-        Utente utenteWithFollowers = utenteRepositoryJpa.findUserWithFollowersById(dto.getToFollowUserId()).orElseThrow(()->new NotFoundException("utente non trovato per id: "+dto.getToFollowUserId()));
+        Utente utenteWithFollowers = utenteRepositoryJpa.findUserWithFollowersAndFollowedById(dto.getToFollowUserId()).orElseThrow(()->new NotFoundException("utente non trovato per id: "+dto.getToFollowUserId()));
+        tokenUser=utenteRepositoryJpa.findUserWithFollowersAndFollowedById(tokenUser.getId()).orElseThrow(()->new NotFoundException("nessun utente trovato con id dell'utente del token"));
         Utente temp = null;
         for(Utente u : utenteWithFollowers.getFollowers())
         {
@@ -113,11 +114,14 @@ public class UtenteServiceImpl implements UtenteService {
         if(temp!=null)
         {
             utenteWithFollowers.getFollowers().remove(temp);
+            tokenUser.getFollowed().remove(temp);
         }
         else{
             utenteWithFollowers.getFollowers().add(tokenUser);
+            tokenUser.getFollowed().add(utenteWithFollowers);
         }
         utenteRepositoryJpa.save(utenteWithFollowers);
+        utenteRepositoryJpa.save(tokenUser);
     }
 
     private Utente findById(Long id)

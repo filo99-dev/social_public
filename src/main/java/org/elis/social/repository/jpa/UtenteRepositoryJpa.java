@@ -30,7 +30,7 @@ public interface UtenteRepositoryJpa extends JpaRepository<Utente,Long> {
 
     Boolean existsByUsername(String username);
 
-    @Query("select u from Utente u join u.posts join u.followed join u.followed where u.id=:id")
+    @Query("select u from Utente u left join u.posts left join u.followed left join u.followed where u.id=:id")
     Optional<Utente> findUserWithPostAndFollowersAndFollowedById(Long id);
 
 }
